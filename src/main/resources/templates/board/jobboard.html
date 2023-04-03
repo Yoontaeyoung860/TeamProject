@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/template/template::main(~{::title},~{::main},~{::script},~{::link})}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="../mainBeforeLogin/common_mainBeforeLogin.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="" th:href="@{/css/board/board.css}">
+  <script src="/js/board.js" defer></script>
+  <script src="/js/api/ajaxCall.js"></script>
+  <script type="text/javascript" src="<%=request.getContextPath()%>/editor/photo_uploader/plugin/hp_SE2M_AttachQuickPhoto.js" charset="utf-8"></script>
+  <script th:inline="javascript">
+  const $id = /*[[${session.loginMember?.id}]]*/ null; //아이디
+  </script>
+  <title>구인 게시판</title>
+
+</head>
+<body>
+<div id="wrapper">
+  <!-- 헤더 -->
+  <header id="header">
+    <div class="header__title"><a href="#">단디알바</a></div>
+    <div class="header__subTitle"><a href="#">:짧지만 확실하게</a></div>
+    <li class="header__login" th:if="${session.loginMember == null}"><a href="/member/join">회원가입</a></li>
+    <li class="header__signUp" th:if="${session.loginMember == null}"><span class="nav__loginBtn">로그인</span></li>
+    <li class="nav__btn myinfoBtn" th:if="${session.loginMember != null}"><a href="/mypage/mypageFavorites">내정보</a></li>
+    <li class="nav__btn" th:if="${session.loginMember != null}" th:data-id="${session.loginMember.id}"><a href="/logout">로그아웃</a></li>
+
+  </header>
+</div>
+  <!-- 글로벌 메뉴바 -->
+  <nav id="gnb">
+    <ul class="gnb__info"><a href="#">채용정보</a>
+      <div class="container1">
+        <li class="gnb__infoLnb"><a href="#">구인 게시판</a></li>
+      </div>
+    </ul>
+    <ul class="gnb__cum"><a href="#">커뮤니티</a>
+      <div class="container2">
+        <li class="gnb__cumLnb"><a href="#">고충 게시판</a></li>
+      </div>
+    </ul>
+    <ul class="gnb__member"><a href="#">개인 서비스</a>
+      <div class="container3">
+        <li class="gnb__memberLnb1"><a href="#">이력서 작성</a></li>
+        <li class="gnb__memberLnb2"><a href="#">이력서 관리</a></li>
+        <li class="gnb__memberLnb3"><a href="#">스케줄 보기</a></li>
+        <li class="gnb__memberLnb4"><a href="#">회원정보 수정</a></li>
+        <li class="gnb__memberLnb5"><a href="#">비밀번호 변경</a></li>
+      </div>
+    </ul>
+    <ul class="gnb__manager"><a href="#">기업 서비스</a>
+      <div class="container4">
+        <li class="gnb__managerLnb1"><a href="#">구인게시글 관리</a></li>
+        <li class="gnb__managerLnb2"><a href="#">지원자 이력서 관리</a></li>
+        <li class="gnb__managerLnb3"><a href="#">스케줄 등록</a></li>
+        <li class="gnb__managerLnb4"><a href="#">회원정보 수정</a></li>
+        <li class="gnb__managerLnb5"><a href="#">비밀번호 변경</a></li>
+      </div>
+    </ul>
+    <ul class="gnb__support"><a href="#">고객지원</a>
+      <div class="container5">
+        <li class="gnb__supportLnb1"><a href="#">공지사항</a></li>
+        <li class="gnb__supportLnb2"><a href="#">아이디 찾기</a></li>
+        <li class="gnb__supportLnb3"><a href="#">비밀번호 찾기</a></li>
+        <li class="gnb__supportLnb4"><a href="#">회원탈퇴</a></li>
+      </div>
+    </ul>
+  </nav>
+  <!-- 메인: 카테고리 검색 -->
+  <main id="categorySearch">
+    <div class="categorySearch__categoryBox"><a href="#" onclick="toggle_div_ctg('display')"><i class="fa-solid fa-bars fa-xl"></i></a>
+      <div id="display">
+        <div class="categorySearch__select1"><a href="#" onclick="toggle_div('display1');">지역</a>
+          <div id="display1" class="loc1"> <a href="#" onclick="toggle_div_1('display1-1');">서울</a>
+            <div id="display1-1">
+              <li>서울 전체<input type="checkbox"></li>
+              <li>강남구<input type="checkbox"></li>
+              <li>강동구<input type="checkbox"></li>
+              <li>강북구<input type="checkbox"></li>
+              <li>강서구<input type="checkbox"></li>
+              <li>관악구<input type="checkbox"></li>
+              <li>광진구<input type="checkbox"></li>
+              <li>구로구<input type="checkbox"></li>
+              <li>금천구<input type="checkbox"></li>
+              <li>노원구<input type="checkbox"></li>
+              <li>도봉구<input type="checkbox"></li>
+              <li>동대문구<input type="checkbox"></li>
+              <li>동작구<input type="checkbox"></li>
+              <li>마포구<input type="checkbox"></li>
+              <li>서대문구<input type="checkbox"></li>
+              <li>서초구<input type="checkbox"></li>
+              <li>성동구<input type="checkbox"></li>
+              <li>성북구<input type="checkbox"></li>
+              <li>송파구<input type="checkbox"></li>
+              <li>양천구<input type="checkbox"></li>
+              <li>영등포구<input type="checkbox"></li>
+              <li>용산구<input type="checkbox"></li>
+              <li>은평구<input type="checkbox"></li>
+              <li>종로구<input type="checkbox"></li>
+              <li>중구<input type="checkbox"></li>
+              <li>중랑구<input type="checkbox"></li>
+            </div>
+            <div class="loc2"><a href="#" onclick="toggle_div1_1('display1-2');">경기</a>
+              <div id="display1-2">
+                <li>경기 전체<input type="checkbox"></li>
+                <li>가평군<input type="checkbox"></li>
+                <li>고양시 덕양구<input type="checkbox"></li>
+                <li>고양시 일산동구<input type="checkbox"></li>
+                <li>고양시 일산서구<input type="checkbox"></li>
+                <li>과천시<input type="checkbox"></li>
+                <li>광명시<input type="checkbox"></li>
+                <li>광주시<input type="checkbox"></li>
+                <li>구리시<input type="checkbox"></li>
+                <li>군포시<input type="checkbox"></li>
+                <li>김포시<input type="checkbox"></li>
+                <li>남양주시<input type="checkbox"></li>
+                <li>동두천시<input type="checkbox"></li>
+                <li>부천시<input type="checkbox"></li>
+                <li>성남시 분당구<input type="checkbox"></li>
+                <li>성남시 수정구<input type="checkbox"></li>
+                <li>성남시 중원구<input type="checkbox"></li>
+                <li>수원시 권선구<input type="checkbox"></li>
+                <li>수원시 영통구<input type="checkbox"></li>
+                <li>수원시 장안구<input type="checkbox"></li>
+                <li>수원시 팔달구<input type="checkbox"></li>
+                <li>시흥시<input type="checkbox"></li>
+                <li>안산시 단원구<input type="checkbox"></li>
+                <li>안산시 상록구<input type="checkbox"></li>
+                <li>안성시<input type="checkbox"></li>
+                <li>안양시 동안구<input type="checkbox"></li>
+                <li>안양시 만안구<input type="checkbox"></li>
+                <li>양주시<input type="checkbox"></li>
+                <li>양평군<input type="checkbox"></li>
+                <li>여주시<input type="checkbox"></li>
+                <li>연천군<input type="checkbox"></li>
+                <li>오산시<input type="checkbox"></li>
+                <li>용인시 기흥구<input type="checkbox"></li>
+                <li>용인시 수지구<input type="checkbox"></li>
+                <li>용인시 처인구<input type="checkbox"></li>
+                <li>의왕시<input type="checkbox"></li>
+                <li>의정부시<input type="checkbox"></li>
+                <li>이천시<input type="checkbox"></li>
+                <li>파주시<input type="checkbox"></li>
+                <li>평택시<input type="checkbox"></li>
+                <li>포천시<input type="checkbox"></li>
+                <li>하남시<input type="checkbox"></li>
+                <li>화성시<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc3"><a href="#" onclick="toggle_div1_2('display1-3');">인천</a>
+              <div id="display1-3">
+                <li>인천 전체<input type="checkbox"></li>
+                <li>강화군<input type="checkbox"></li>
+                <li>계양구<input type="checkbox"></li>
+                <li>남동구<input type="checkbox"></li>
+                <li>동구<input type="checkbox"></li>
+                <li>미추홀구<input type="checkbox"></li>
+                <li>부평구<input type="checkbox"></li>
+                <li>서구<input type="checkbox"></li>
+                <li>연수구<input type="checkbox"></li>
+                <li>옹진군<input type="checkbox"></li>
+                <li>중구<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc4"><a href="#" onclick="toggle_div1_3('display1-4');">강원</a>
+              <div id="display1-4">
+                <li>강원 전체<input type="checkbox"></li>
+                <li>강릉시<input type="checkbox"></li>
+                <li>고성군<input type="checkbox"></li>
+                <li>동해시<input type="checkbox"></li>
+                <li>삼척시<input type="checkbox"></li>
+                <li>속초시<input type="checkbox"></li>
+                <li>양구군<input type="checkbox"></li>
+                <li>양양군<input type="checkbox"></li>
+                <li>영월군<input type="checkbox"></li>
+                <li>원주시<input type="checkbox"></li>
+                <li>인제군<input type="checkbox"></li>
+                <li>정선군<input type="checkbox"></li>
+                <li>철원군<input type="checkbox"></li>
+                <li>춘천시<input type="checkbox"></li>
+                <li>태백시<input type="checkbox"></li>
+                <li>평창군<input type="checkbox"></li>
+                <li>홍천군<input type="checkbox"></li>
+                <li>화천군<input type="checkbox"></li>
+                <li>횡성군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc5"><a href="#" onclick="toggle_div1_4('display1-5');">대전</a>
+              <div id="display1-5">
+                <li>대전 전체<input type="checkbox"></li>
+                <li>대덕구<input type="checkbox"></li>
+                <li>동구<input type="checkbox"></li>
+                <li>서구<input type="checkbox"></li>
+                <li>유성구<input type="checkbox"></li>
+                <li>중구<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc6"><a href="#" onclick="toggle_div1_5('display1-6');">세종</a>
+              <div id="display1-6">
+                <li>세종 전체<input type="checkbox"></li>
+                <li>세종시<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc7"><a href="#" onclick="toggle_div1_6('display1-7');">충남</a>
+              <div id="display1-7">
+                <li>충남 전체<input type="checkbox"></li>
+                <li>계룡시<input type="checkbox"></li>
+                <li>공주시<input type="checkbox"></li>
+                <li>금산군<input type="checkbox"></li>
+                <li>논산시<input type="checkbox"></li>
+                <li>당진시<input type="checkbox"></li>
+                <li>보령시<input type="checkbox"></li>
+                <li>부여군<input type="checkbox"></li>
+                <li>서산시<input type="checkbox"></li>
+                <li>서천군<input type="checkbox"></li>
+                <li>아산시<input type="checkbox"></li>
+                <li>예산군<input type="checkbox"></li>
+                <li>천안시 동남구<input type="checkbox"></li>
+                <li>천안시 서북구<input type="checkbox"></li>
+                <li>청양군<input type="checkbox"></li>
+                <li>태안군<input type="checkbox"></li>
+                <li>홍성군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc8"><a href="#" onclick="toggle_div1_7('display1-8');">충북</a>
+              <div id="display1-8">
+                <li>충북 전체<input type="checkbox"></li>
+                <li>괴산군<input type="checkbox"></li>
+                <li>단양군<input type="checkbox"></li>
+                <li>보은군<input type="checkbox"></li>
+                <li>영동군<input type="checkbox"></li>
+                <li>옥천군<input type="checkbox"></li>
+                <li>음성군<input type="checkbox"></li>
+                <li>제천시<input type="checkbox"></li>
+                <li>증평군<input type="checkbox"></li>
+                <li>진천군<input type="checkbox"></li>
+                <li>청주시 상당구<input type="checkbox"></li>
+                <li>청주시 서원구<input type="checkbox"></li>
+                <li>청주시 청원구<input type="checkbox"></li>
+                <li>청주시 흥덕구<input type="checkbox"></li>
+                <li>충주시<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc9"><a href="#" onclick="toggle_div1_8('display1-9');">부산</a>
+              <div id="display1-9">
+                <li>부산 전체<input type="checkbox"></li>
+                <li>강서구<input type="checkbox"></li>
+                <li>금정구<input type="checkbox"></li>
+                <li>기장군<input type="checkbox"></li>
+                <li>남구<input type="checkbox"></li>
+                <li>동구<input type="checkbox"></li>
+                <li>동래구<input type="checkbox"></li>
+                <li>부산진구<input type="checkbox"></li>
+                <li>북구<input type="checkbox"></li>
+                <li>사상구<input type="checkbox"></li>
+                <li>사하구<input type="checkbox"></li>
+                <li>서구<input type="checkbox"></li>
+                <li>수영구<input type="checkbox"></li>
+                <li>연제구<input type="checkbox"></li>
+                <li>영도구<input type="checkbox"></li>
+                <li>중구<input type="checkbox"></li>
+                <li>해운대구<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc10"><a href="#" onclick="toggle_div1_9('display1-10');">울산</a>
+              <div id="display1-10">
+                <li>울산 전체<input type="checkbox"></li>
+                <li>남구<input type="checkbox"></li>
+                <li>중구<input type="checkbox"></li>
+                <li>동구<input type="checkbox"></li>
+                <li>북구<input type="checkbox"></li>
+                <li>울주군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc11"><a href="#" onclick="toggle_div1_10('display1-11');">경남</a>
+              <div id="display1-11">
+                <li>경남 전체<input type="checkbox"></li>
+                <li>거제시<input type="checkbox"></li>
+                <li>거창군<input type="checkbox"></li>
+                <li>고성군<input type="checkbox"></li>
+                <li>김해시<input type="checkbox"></li>
+                <li>남해군<input type="checkbox"></li>
+                <li>밀양시<input type="checkbox"></li>
+                <li>사천시<input type="checkbox"></li>
+                <li>산청군<input type="checkbox"></li>
+                <li>양산시<input type="checkbox"></li>
+                <li>의령군<input type="checkbox"></li>
+                <li>진주시<input type="checkbox"></li>
+                <li>창녕군<input type="checkbox"></li>
+                <li>창원시 마산합포구<input type="checkbox"></li>
+                <li>창원시 마산회원구<input type="checkbox"></li>
+                <li>창원시 성산구<input type="checkbox"></li>
+                <li>창원시 의창구<input type="checkbox"></li>
+                <li>창원시 진해구<input type="checkbox"></li>
+                <li>통영시<input type="checkbox"></li>
+                <li>하동군<input type="checkbox"></li>
+                <li>함안군<input type="checkbox"></li>
+                <li>함양군<input type="checkbox"></li>
+                <li>합천군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc12"><a href="#" onclick="toggle_div1_11('display1-12');">경북</a>
+              <div id="display1-12">
+                <li>경북 전체<input type="checkbox"></li>
+                <li>경산시<input type="checkbox"></li>
+                <li>경주시<input type="checkbox"></li>
+                <li>고령군<input type="checkbox"></li>
+                <li>구미시<input type="checkbox"></li>
+                <li>군위군<input type="checkbox"></li>
+                <li>김천시<input type="checkbox"></li>
+                <li>문경시<input type="checkbox"></li>
+                <li>봉화군<input type="checkbox"></li>
+                <li>상주시<input type="checkbox"></li>
+                <li>성주군<input type="checkbox"></li>
+                <li>안동시<input type="checkbox"></li>
+                <li>영덕군<input type="checkbox"></li>
+                <li>영양군<input type="checkbox"></li>
+                <li>영주시<input type="checkbox"></li>
+                <li>영천시<input type="checkbox"></li>
+                <li>예천군<input type="checkbox"></li>
+                <li>울릉군<input type="checkbox"></li>
+                <li>울진군<input type="checkbox"></li>
+                <li>의성군<input type="checkbox"></li>
+                <li>청도군<input type="checkbox"></li>
+                <li>청송군<input type="checkbox"></li>
+                <li>칠곡군<input type="checkbox"></li>
+                <li>포항시 남구<input type="checkbox"></li>
+                <li>포항시 북구<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc13"><a href="#" onclick="toggle_div1_12('display1-13');">대구</a>
+              <div id="display1-13">
+                <li>대구 전체<input type="checkbox"></li>
+                <li>남구<input type="checkbox"></li>
+                <li>서구<input type="checkbox"></li>
+                <li>북구<input type="checkbox"></li>
+                <li>동구<input type="checkbox"></li>
+                <li>중구<input type="checkbox"></li>
+                <li>달서구<input type="checkbox"></li>
+                <li>수성구<input type="checkbox"></li>
+                <li>달성군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc14"><a href="#" onclick="toggle_div1_13('display1-14');">광주</a>
+              <div id="display1-14">
+                <li>광주 전체<input type="checkbox"></li>
+                <li>광산구<input type="checkbox"></li>
+                <li>남구<input type="checkbox"></li>
+                <li>동구<input type="checkbox"></li>
+                <li>북구<input type="checkbox"></li>
+                <li>서구<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc15"><a href="#" onclick="toggle_div1_14('display1-15');">전남</a>
+              <div id="display1-15">
+                <li>전남 전체<input type="checkbox"></li>
+                <li>강진군<input type="checkbox"></li>
+                <li>고흥군<input type="checkbox"></li>
+                <li>곡성군<input type="checkbox"></li>
+                <li>광양시<input type="checkbox"></li>
+                <li>구례군<input type="checkbox"></li>
+                <li>나주시<input type="checkbox"></li>
+                <li>담양군<input type="checkbox"></li>
+                <li>목포시<input type="checkbox"></li>
+                <li>무안군<input type="checkbox"></li>
+                <li>보성군<input type="checkbox"></li>
+                <li>순천시<input type="checkbox"></li>
+                <li>신안군<input type="checkbox"></li>
+                <li>여수시<input type="checkbox"></li>
+                <li>영광군<input type="checkbox"></li>
+                <li>영암군<input type="checkbox"></li>
+                <li>완도군<input type="checkbox"></li>
+                <li>장성군<input type="checkbox"></li>
+                <li>장흥군<input type="checkbox"></li>
+                <li>진도군<input type="checkbox"></li>
+                <li>함평군<input type="checkbox"></li>
+                <li>해남군<input type="checkbox"></li>
+                <li>화순군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc16"><a href="#" onclick="toggle_div1_15('display1-16');">전북</a>
+              <div id="display1-16">
+                <li>전북 전체<input type="checkbox"></li>
+                <li>고창군<input type="checkbox"></li>
+                <li>군산시<input type="checkbox"></li>
+                <li>김제시<input type="checkbox"></li>
+                <li>남원시<input type="checkbox"></li>
+                <li>무주군<input type="checkbox"></li>
+                <li>부안군<input type="checkbox"></li>
+                <li>순창군<input type="checkbox"></li>
+                <li>완주군<input type="checkbox"></li>
+                <li>익산시<input type="checkbox"></li>
+                <li>임실군<input type="checkbox"></li>
+                <li>장수군<input type="checkbox"></li>
+                <li>전주시 덕진구<input type="checkbox"></li>
+                <li>전주시 완산구<input type="checkbox"></li>
+                <li>정읍시<input type="checkbox"></li>
+                <li>진안군<input type="checkbox"></li>
+              </div>
+            </div>
+            <div class="loc17"><a href="#" onclick="toggle_div1_16('display1-17');">제주</a>
+              <div id="display1-17">
+                <li>제주 전체<input type="checkbox"></li>
+                <li>서귀포시<input type="checkbox"></li>
+                <li>제주시<input type="checkbox"></li>
+              </div>
+            </div>
+          </div> <!-- 밖으로 노노 -->
+        </div>
+        <div class="categorySearch__select2"><a href="#" onclick="toggle_div2('display3')">업직종</a>
+          <div id="display3">
+            <li>서빙<input type="checkbox"></li>
+            <li>주방장 및 조리사<input type="checkbox"></li>
+            <li>주방보조<input type="checkbox"></li>
+            <li>바리스타<input type="checkbox"></li>
+            <li>제과제빵사<input type="checkbox"></li>
+            <li>바<input type="checkbox"></li>
+            <li>매장관리 및 판매<input type="checkbox"></li>
+            <li>사무보조<input type="checkbox"></li>
+            <div class="categorySearch__selectDetailed"><a href="#" onclick="toggle_div3('display4')">상세검색</a>
+              <!-- 상세 검색 -->
+              <div id="display4">
+                <div class="categorySearch__detailedBox"><a href="#" onclick="toggle_div3_1('display4-1')">급여형태</a>
+                  <ul id="display4-1">
+                    <li>월급<input type="checkbox"></li>
+                    <li>시급<input type="checkbox"></li>
+                    <li>일급<input type="checkbox"></li>
+                    <li>주급<input type="checkbox"></li>
+                  </ul>
+                </div>
+                <div class="categorySearch__detailedBox"><a href="#" onclick="toggle_div3_2('display4-2')">고용형태</a>
+                  <ul id="display4-2">
+                    <li>계약직<input type="checkbox"></li>
+                    <li>정규직<input type="checkbox"></li>
+                    <li>일용직<input type="checkbox"></li>
+                  </ul>
+                </div>
+                <div class="categorySearch__detailedBox"><a href="#" onclick="toggle_div3_3('display4-3')">근무요일</a>
+                  <ul id="display4-3">
+                    <li>월<input type="checkbox"></li>
+                    <li>화<input type="checkbox"></li>
+                    <li>수<input type="checkbox"></li>
+                    <li>목<input type="checkbox"></li>
+                    <li>금<input type="checkbox"></li>
+                    <li>토<input type="checkbox"></li>
+                    <li>일<input type="checkbox"></li>
+                  </ul>
+                </div>
+                <div class="categorySearch__detailedBox"><a href="#" onclick="toggle_div3_4('display4-4')">근무시간</a>
+                  <ul id="display4-4">
+                    <li>오전 (자정 ~ 낮 12시)<input type="checkbox"></li>
+                    <li>오후 (정오 ~ 밤 12시)<input type="checkbox"></li>
+                  </ul>
+                </div>
+                <div class="categorySearch__detailedBox"><a href="#" onclick="toggle_div3_5('display4-5')">근무기간</a>
+                  <ul id="display4-5">
+                    <li>3개월 미만<input type="checkbox"></li>
+                    <li>3개월 이상<input type="checkbox"></li>
+                    <li>6개월 이상<input type="checkbox"></li>
+                    <li>1년 이상<input type="checkbox"></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <input class="categorySearch__btn1" type="button" value="검색">
+            <input class="categorySearch__btn2" type="reset" value="초기화">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top : -200px;">
+      <h1 class="title">구인 게시판</h1>
+      <!-- 검색 폼 -->
+      <form action="" th:action="@{/your-url}" th:object="${searchForm}" method="post" class="board__searchForm">
+        <div class="board__search">
+          <select name="searchType" id="searchType" th:field="*{searchType}" class="board__search_select">
+            <option th:value="btitle">제목</option>
+            <option th:value="nickname">작성자명</option>
+            <option th:value="bcontent">내용</option>
+          </select>
+          <input type="text" name="keyword" id="keyword" th:field="*{keyword}" th:data-cate="${cate}" class="board__searchInput">
+          <button type="submit" id="searchBtn" class="searchBtn" th:data-cate="${cate}">검색</button>
+        </div>
+      </form>
+      <!-- 지역 선택 드롭다운 -->
+      <label for="city">시:</label>
+      <select id="city" th:field="*{city}">
+        <option th:value="" selected>시를 선택하세요</option>
+        <!-- 도시 옵션을 동적으로 추가하세요. -->
+      </select>
+
+      <label for="province">도:</label>
+      <select id="province" th:field="*{province}" disabled>
+        <option th:value="" selected>도를 선택하세요</option>
+        <!-- 도 옵션을 동적으로 추가하세요. -->
+      </select>
+
+      <label for="county">군:</label>
+      <select id="county" th:field="*{county}" disabled>
+        <option th:value="" selected>군을 선택하세요</option>
+        <!-- 군 옵션을 동적으로 추가하세요. -->
+      </select>
+      <!-- 필터 컨테이너 1 -->
+      <div class="filter-container1">
+        <div class="filter-box1">
+          <h3 class="la1">근무 기간</h3>
+          <div class="checkbox-group1">
+            <!-- 체크박스를 동적으로 생성하고 th:field를 사용하여 서버에서 가져온 값으로 설정하세요. -->
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="1일">1일</label>
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="1주일 이내">1주일 이내</label>
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="1주일~1개월">1주일~1개월</label>
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="1개월~3개월">1개월~3개월</label>
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="3개월~6개월">3개월~6개월</label>
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="6개월~1년">6개월~1년</label>
+            <label><input type="checkbox" name="work_period" th:field="*{work_period}" th:value="1년 이상">1년 이상</label>
+          </div>
+        </div>
+      </div>
+      <!-- 필터 컨테이너 2 -->
+      <div class="filter-container2">
+        <div class="filter-box2">
+          <h3 class="la2">근무 요일</h3>
+          <div class="checkbox-group2">
+            <!-- 체크박스를 동적으로 생성하고 th:field를 사용하여 서버에서 가져온 값으로 설정하세요. -->
+            <label><input type="checkbox" name="work_days" th:field="*{work_days}" th:value="평일(월,화,수,목,금)">평일(월,화,수,목,금)</label>
+            <label><input type="checkbox" name="work_days" th:field="*{work_days}" th:value="주말(토,일)">주말(토,일)</label>
+            <!-- 나머지 요일 체크박스도 동일한 방식으로 추가하세요. -->
+          </div>
+        </div>
+      </div>
+      <!-- 필터 컨테이너 3 -->
+      <div class="filter-container3">
+        <div class="filter-box3">
+          <h3 class="la3">근무 시간</h3>
+          <div class="checkbox-group3">
+            <!-- 체크박스를 동적으로 생성하고 th:field를 사용하여 서버에서 가져온 값으로 설정하세요. -->
+            <label><input type="checkbox" name="work_hours" th:field="*{work_hours}" th:value="오전">오전</label>
+            <label><input type="checkbox" name="work_hours" th:field="*{work_hours}" th:value="오전~오후">오전~오후</label>
+            <label><input type="checkbox" name="work_hours" th:field="*{work_hours}" th:value="종일">종일</label>
+            <label><input type="checkbox" name="work_hours" th:field="*{work_hours}" th:value="오후">오후</label>
+            <!-- 나머지 시간 체크박스도 동일한 방식으로 추가하세요. -->
+          </div>
+        </div>
+      </div>
+    </div>
+      <table>
+        <div class="board-button">
+          <button class="btn" id="writeBtn" type="button" onclick="location.href='/board/add'">글쓰기</button>
+        </div>
+        <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>회사명</th>
+          <th>지역</th>
+          <th>급여</th>
+          <th>등록일</th>
+          <th>마감일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <block th:each="item : ${items}">
+          <tr>
+            <td th:text="${itemStat.size - itemStat.index}" class="num">NO</td>
+            <td class="title">
+              <a th:href="@{|/board/${item.bnum}/detail|}" th:text="${item.btitle}">제목</a>
+              <span class="numberOfComment" th:text="${item.cnt eq 0} ? '' : |[${item.cnt}]|"></span>
+            </td>
+            <td th:text="${item.nickname}" class="nickname">작성자</td>
+            <td th:text="${item.budate}" class="date">작성일</td>
+            <td th:text="${item.bhit}" class="hit">조회수</td>
+          </tr>
+        </block>
+        </tbody>
+      </table>
+      <div class="post-page">
+        <!--이전페이지정보-->
+        <th:block th:if="${fc.prev}">
+          <a class="post-page-item" href=""
+             th:href="@{/post/list/1/{searchType}/{keyword}(searchType=${fc.searchType},keyword=${fc.keyword},category=${param.category})}">
+            <i class="fas fa-angle-double-left"></i>
+          </a>
+          <a class="post-page-item" href=""
+             th:href="@{/post/list/{reqPage}/{searchType}/{keyword}(reqPage=${fc.startPage-1},searchType=${fc.searchType},keyword=${fc.keyword},category=${param.category})}">
+            <i class="fas fa-angle-left"></i>
+          </a>
+        </th:block>
+
+        <!--페이지표시-->
+        <th:block th:each="pnum : ${#numbers.sequence(fc.startPage,fc.endPage)}">
+          <th:block th:if="${pnum != 0}">
+            <!--                  <a class="bbs-page-item" th:classappend="${fc.rc.reqPage == pnum} ? 'active'" href="" th:href="@{|/bbs/list/${pnum}|}" th:text="${pnum}">1</a>-->
+            <a class="post-page-item" th:classappend="${fc.rc.reqPage == pnum} ? 'active'" href=""
+               th:href="@{/post/list/{reqPage}/{searchType}/{keyword}(reqPage=${pnum},searchType=${fc.searchType},keyword=${fc.keyword},category=${param.category})}"
+               th:text="${pnum}">1</a>
+          </th:block>
+        </th:block>
+
+        <!--다음페이지정보-->
+        <th:block th:if="${fc.next}">
+          <a class="post-page-item" href=""
+             th:href="@{/post/list/{reqPage}/{searchType}/{keyword}(reqPage=${fc.endPage+1},searchType=${fc.searchType},keyword=${fc.keyword},category=${param.category})}">
+            <i class="fas fa-angle-right"></i>
+          </a>
+          <a class="post-page-item" href=""
+             th:href="@{/post/list/{reqPage}/{searchType}/{keyword}(reqPage=${fc.finalEndPage},searchType=${fc.searchType},keyword=${fc.keyword},category=${param.category})}">
+            <i class="fas fa-angle-double-right"></i>
+          </a>
+        </th:block>
+      </div>
+
+
+    </div>
+    <!-- 푸터 아래쪽 -->
+    <footer id="footerDown">
+      <div class="footerDown__text1">단디알바</div>
+      <div class="footerDown__text2">회사 소개 울산KH정보교육원</div>
+      <div class="footerDown__text3">대표자 이상인</div>
+      <div class="footerDown__text4">주소 울산시 남구 OOOOOO</div>
+      <div class="footerDown__text5">고객센터 010-1234-5678</div>
+      <div class="footerDown__text6">E-mail abcd@abcd.com</div>
+      <div class="footerDown__text7">Copyright 2023 단디알바 Corp.All. Right Reserved.</div>
+    </footer>
+
+
+</script>
+
+  </main>
+</div>
+
+</body>
+</html>
